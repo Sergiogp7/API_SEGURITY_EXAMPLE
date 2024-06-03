@@ -1,6 +1,11 @@
 package com.dwes.security.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -8,10 +13,16 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.dwes.security.entities.Alumno;
+import com.dwes.security.entities.Curso;
 import com.dwes.security.entities.Libro;
+import com.dwes.security.entities.Proyecto;
 import com.dwes.security.entities.Role;
 import com.dwes.security.entities.Usuario;
+import com.dwes.security.repository.CursoRepository;
 import com.dwes.security.repository.LibroRepository;
+import com.dwes.security.repository.ProyectoRepository;
+import com.dwes.security.repository.RecursoRepository;
 import com.dwes.security.repository.UserRepository;
 import com.github.javafaker.Faker;
 
@@ -21,6 +32,12 @@ public class InitializationData implements CommandLineRunner {
 
     @Autowired
     private UserRepository usuarioRepository;
+    
+    @Autowired
+    private CursoRepository cursoRepository;
+    
+    @Autowired
+    private ProyectoRepository proyectoRepository;
     
     private final boolean borrarLibros = false; // Variable para controlar el borrado de datos
     
@@ -65,9 +82,32 @@ public class InitializationData implements CommandLineRunner {
             usuario3.getRoles().add(Role.ROLE_USER);
             usuarioRepository.save(usuario3);
             
+            // Test students
+            List<Alumno> alumnos = new ArrayList<>();
+            for (int i = 0; i < 5; i++) { // Add 5 test students
+                Alumno alumno = new Alumno();
+                alumno.setFirstName("StudentFirstName" + i);
+                alumno.setLastName("StudentLastName" + i);
+                alumno.setEmail("student" + i + "@example.com");
+                alumno.setPassword(passwordEncoder.encode("studentpassword" + i));
+                alumno.getRoles().add(Role.ROLE_USER); // Assuming students have USER role
+                alumnos.add(alumno);
+                usuarioRepository.save(alumno); // Save student as a user
+            }
             
+            // Test curso
+            Curso curso = new Curso();
+            curso.setValor("23-24"); // Setting the course value for the academic year 2023-2024
+            cursoRepository.save(curso);
             
-            
+
+            // Crear proyecto asociado a un alumno y un curso
+            for (Alumno alumno : alumnos) {
+                Proyecto proyecto = new Proyecto("Proyecto de " + alumno.getFirstName(), curso); // Crear proyecto asociado al curso
+                proyecto.getAlumnos().add(alumno); // Asociar alumno al proyecto
+                proyectoRepository.save(proyecto); // Guardar proyecto
+            }
+
     	}catch(Exception e) {
     		
     	}

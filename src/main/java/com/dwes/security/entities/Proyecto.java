@@ -64,6 +64,7 @@ public class Proyecto {
     public Set<Alumno> getAlumnos() {
         return alumnos;
     }
+    
 
     public void setAlumnos(Set<Alumno> alumnos) {
         this.alumnos = alumnos;
