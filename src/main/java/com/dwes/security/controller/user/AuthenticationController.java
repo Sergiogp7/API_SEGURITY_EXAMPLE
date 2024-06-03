@@ -1,5 +1,7 @@
 package com.dwes.security.controller.user;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,21 +14,29 @@ import com.dwes.security.dto.request.SigninRequest;
 import com.dwes.security.dto.response.user.JwtAuthenticationResponse;
 import com.dwes.security.service.user.AuthenticationService;
 
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
+	
+	
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+
+	
 	@Autowired
     AuthenticationService authenticationService;
     @PostMapping("/signup")
     public ResponseEntity<JwtAuthenticationResponse> signup(@RequestBody SignUpRequest request) {
-        return ResponseEntity.ok(authenticationService.signup(request));
+    	
+    	return ResponseEntity.ok(authenticationService.signup(request));
     }
 
     @PostMapping("/signin")
     public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SigninRequest request) {
+    	logger.info("Sigin :: " + request.getEmail());
         return ResponseEntity.ok(authenticationService.signin(request));
     }
 }

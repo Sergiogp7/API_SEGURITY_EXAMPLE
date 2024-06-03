@@ -1,11 +1,7 @@
 package com.dwes.security.config;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,7 +18,6 @@ import com.dwes.security.entities.Usuario;
 import com.dwes.security.repository.CursoRepository;
 import com.dwes.security.repository.LibroRepository;
 import com.dwes.security.repository.ProyectoRepository;
-import com.dwes.security.repository.RecursoRepository;
 import com.dwes.security.repository.UserRepository;
 import com.github.javafaker.Faker;
 
@@ -33,12 +28,6 @@ public class InitializationData implements CommandLineRunner {
     @Autowired
     private UserRepository usuarioRepository;
     
-    @Autowired
-    private CursoRepository cursoRepository;
-    
-    @Autowired
-    private ProyectoRepository proyectoRepository;
-    
     private final boolean borrarLibros = false; // Variable para controlar el borrado de datos
     
     @Autowired
@@ -46,6 +35,12 @@ public class InitializationData implements CommandLineRunner {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private CursoRepository cursoRepository;
+    
+    @Autowired
+    private ProyectoRepository proyectoRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -82,36 +77,56 @@ public class InitializationData implements CommandLineRunner {
             usuario3.getRoles().add(Role.ROLE_USER);
             usuarioRepository.save(usuario3);
             
-            // Test students
-            List<Alumno> alumnos = new ArrayList<>();
-            for (int i = 0; i < 5; i++) { // Add 5 test students
-                Alumno alumno = new Alumno();
-                alumno.setFirstName("StudentFirstName" + i);
-                alumno.setLastName("StudentLastName" + i);
-                alumno.setEmail("student" + i + "@example.com");
-                alumno.setPassword(passwordEncoder.encode("studentpassword" + i));
-                alumno.getRoles().add(Role.ROLE_USER); // Assuming students have USER role
-                alumnos.add(alumno);
-                usuarioRepository.save(alumno); // Save student as a user
-            }
             
-            // Test curso
-            Curso curso = new Curso();
-            curso.setValor("23-24"); // Setting the course value for the academic year 2023-2024
-            cursoRepository.save(curso);
             
-
-            // Crear proyecto asociado a un alumno y un curso
-            for (Alumno alumno : alumnos) {
-                Proyecto proyecto = new Proyecto("Proyecto de " + alumno.getFirstName(), curso); // Crear proyecto asociado al curso
-                proyecto.getAlumnos().add(alumno); // Asociar alumno al proyecto
-                proyectoRepository.save(proyecto); // Guardar proyecto
-            }
-
+            
     	}catch(Exception e) {
     		
     	}
     	Faker faker = new Faker(new Locale("es"));
+    try {
+    	 // Crear curso 23-24
+        Curso curso = new Curso();
+        curso.setValor("23-24");
+        cursoRepository.save(curso);
+    	
+    	  // Crear tres alumnos y sus proyectos
+        for (int i = 0; i < 3; i++) {
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            String email = faker.internet().emailAddress();
+            String password = passwordEncoder.encode("password123");
+
+            // Crear usuario/alumno
+            Alumno alumno = new Alumno();
+            alumno.setFirstName(firstName);
+            alumno.setLastName(lastName);
+            alumno.setEmail(email);
+            alumno.setPassword(password);
+            alumno.getRoles().add(Role.ROLE_USER);
+            usuarioRepository.save(alumno);
+
+            // Crear proyecto asociado al curso
+            Proyecto proyecto = new Proyecto("Proyecto de " + firstName, curso);
+            proyecto.setAlumnos(new HashSet<Alumno>()); // Inicializar la colección de alumnos
+            proyecto.getAlumnos().add(alumno); // Asociar alumno al proyecto
+
+            // También debes actualizar el conjunto de proyectos del alumno
+            if (alumno.getProyectos() == null) {
+                alumno.setProyectos(new HashSet<>());
+            }
+            alumno.getProyectos().add(proyecto);
+
+            // Guardar proyecto y actualizar alumno
+            proyectoRepository.save(proyecto);
+            usuarioRepository.save(alumno);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    
+    
+    
         for (int i = 0; i < 10; i++) { // Generar 10 libros ficticios
             Libro libro = new Libro();
             libro.setTitulo(faker.book().title());

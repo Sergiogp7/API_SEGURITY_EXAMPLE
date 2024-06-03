@@ -39,6 +39,8 @@ public class Proyecto {
     private Curso curso;
     
     
+    public Proyecto() {}
+    
     public Proyecto(String titulo, Curso curso) {
         this.titulo = titulo;
         this.curso = curso;
