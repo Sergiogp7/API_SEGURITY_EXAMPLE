@@ -1,43 +1,35 @@
 package com.dwes.security.entities;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Pattern;
 
 @Entity
-@Table(name = "Cursos")
-public class Curso {
+@Table(name = "Alumnos")
+public class Alumno extends Usuario {
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-    @Pattern(regexp = "\\d{2}-\\d{2}", message = "El formato del curso debe ser 'xx-xx'")
-	private String valor;
-    
-    @OneToMany(mappedBy = "curso")
-    private Set<Proyecto> proyectos = new HashSet<>();
 
+	@ManyToMany(mappedBy = "alumnos")
+	private Set<Proyecto> proyectos;
+
+
+	// Getters y setters
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getValor() {
-		return valor;
-	}
-
-	public void setValor(String valor) {
-		this.valor = valor;
 	}
 
 	public Set<Proyecto> getProyectos() {
@@ -47,8 +39,4 @@ public class Curso {
 	public void setProyectos(Set<Proyecto> proyectos) {
 		this.proyectos = proyectos;
 	}
-    
-    
-    
-    
 }
