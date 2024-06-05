@@ -46,7 +46,9 @@ public class JwtServiceImpl implements JwtService {
     // Genera un token JWT para un usuario con detalles específicos (UserDetails).
     @Override
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    	Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+        return generateToken(claims, userDetails);
     }
 
     // Verifica si el token es válido comparando el nombre de usuario y comprobando si ha expirado.
