@@ -122,7 +122,11 @@ public class JwtServiceImpl implements JwtService {
      * Obtiene la llave de firma a partir de la cadena codificada en base64.
      */
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+       /* byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
+        return Keys.hmacShaKeyFor(keyBytes);*/
+    	return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtSigningKey));
+
+
+
     }
 }
