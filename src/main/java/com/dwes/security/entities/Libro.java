@@ -26,7 +26,8 @@ public class Libro {
     @Column(unique = true)
     @NotBlank(message = "El ISBN no puede estar vacío")
     @Size(min = 10, max = 13, message = "El ISBN debe tener entre 10 y 13 caracteres")
-    @Pattern(regexp = "[0-9]+", message = "El ISBN solo debe contener números")
+    @Pattern(regexp = "^[0-9]{9}[0-9X]$|^[0-9]{13}$",
+    message = "ISBN debe ser 10 (con X posible) o 13 dígitos")
     private String isbn;
 
 	public Long getId() {
