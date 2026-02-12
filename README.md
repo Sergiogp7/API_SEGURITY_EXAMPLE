@@ -136,9 +136,7 @@ Ideal para 2º DAW -- Desarrollo Web en Entorno Servidor.
 
 ------------------------------------------------------------------------
 
-## 👨‍🏫 Autor
-
-Proyecto con fines educativos para demostración en clase.
+## 👨‍🏫 Proyecto con fines educativos para demostración en clase.
 # JWT Authentication and Authorization with Spring Boot 3 and Spring Security 6
 
 Medium
