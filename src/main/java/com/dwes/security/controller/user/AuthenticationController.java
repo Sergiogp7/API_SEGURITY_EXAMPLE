@@ -13,7 +13,9 @@ import com.dwes.security.dto.response.user.JwtAuthenticationResponse;
 import com.dwes.security.service.user.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
-
+/**
+ * Para comprobar el token -JWT DEBUGGER : https://www.jwt.io/
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
