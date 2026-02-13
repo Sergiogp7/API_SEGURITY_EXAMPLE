@@ -1,5 +1,8 @@
 package com.dwes.security.config;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.Locale;
 
 import org.slf4j.Logger;
@@ -42,6 +45,8 @@ public class DemoDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+    	starMysql();
+    	
         log.info("========================================");
         log.info("INICIALIZANDO DATOS DE DEMOSTRACIÓN");
         log.info("========================================");
@@ -154,5 +159,25 @@ public class DemoDataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             log.error("✗ Error al inicializar usuarios: {}", e.getMessage(), e);
         }
+    }
+    
+
+    private static void starMysql() throws Exception {
+    	 // 1) Asegúrate de que LAMPP MySQL está arriba (si lo arrancas fuera, elimina esto)
+        new ProcessBuilder("bash", "-lc", "sudo /opt/lampp/lampp startmysql")
+                .inheritIO()
+                .start()
+                .waitFor();
+
+        // 2) Crear BD
+        String dbName = "tubasededatos";
+        
+        new ProcessBuilder("bash", "-lc", "/opt/lampp/bin/mysql -u root -e \"CREATE DATABASE IF NOT EXISTS "+dbName+" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\"\n")
+        .inheritIO()
+        .start()
+        .waitFor();
+
+        
+    
     }
 }
