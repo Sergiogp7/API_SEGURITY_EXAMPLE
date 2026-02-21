@@ -2,6 +2,8 @@ package com.dwes.security.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.dwes.security.entities.Role;
 import com.dwes.security.service.UserService;
@@ -34,7 +40,9 @@ public class SecurityConfiguration {
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+        .cors(cors -> {}) /* habilitado CORS */
+        .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->           
                 request
                 .requestMatchers("/api/v1/auth/**").permitAll()
@@ -67,5 +75,26 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
         return config.getAuthenticationManager();
+    }
+    
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Origen del frontend
+        config.setAllowedOrigins(List.of("http://localhost:8081"));
+
+        // Métodos permitidos (incluye OPTIONS para preflight)
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // Headers que el navegador suele enviar (Authorization para JWT)
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        // Si usas cookies/sesión (aquí normalmente NO con JWT stateless)
+        // config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
