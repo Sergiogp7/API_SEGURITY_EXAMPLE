@@ -81,20 +81,17 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Origen del frontend
-        config.setAllowedOrigins(List.of(
-        		//  "http://localhost:8081",
-        		  "http://127.0.0.1:8081",
-        		  "http://192.168.1.71:8081" // <-- IP REAL donde se sirve el frontend
-        		));
+        // Permite frontend local y en LAN (192.168.1.x)
+        config.setAllowedOriginPatterns(List.of(
+            "http://localhost:8081",
+            "http://127.0.0.1:8081",
+            "http://192.168.1.*:8081"
+        ));
 
-        // Métodos permitidos (incluye OPTIONS para preflight)
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Headers que el navegador suele enviar (Authorization para JWT)
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
-        // Si usas cookies/sesión (aquí normalmente NO con JWT stateless)
+        // IMPORTANTE: para JWT en Authorization NO hace falta allowCredentials
         // config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
