@@ -82,7 +82,11 @@ public class SecurityConfiguration {
         CorsConfiguration config = new CorsConfiguration();
 
         // Origen del frontend
-        config.setAllowedOrigins(List.of("http://localhost:8081"));
+        config.setAllowedOrigins(List.of(
+        		//  "http://localhost:8081",
+        		  "http://127.0.0.1:8081",
+        		  "http://192.168.1.71:8081" // <-- IP REAL donde se sirve el frontend
+        		));
 
         // Métodos permitidos (incluye OPTIONS para preflight)
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
