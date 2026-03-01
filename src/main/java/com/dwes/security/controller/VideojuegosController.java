@@ -14,8 +14,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+<<<<<<< HEAD
+import com.dwes.security.controller.user.AuthorizationAdminController;
+import com.dwes.security.entities.Usuario;
+import com.dwes.security.entities.Videojuego;
+import com.dwes.security.service.VideojuegosService;
+import org.springframework.security.core.context.SecurityContextHolder;
+=======
 import java.util.*;
 import java.util.stream.Collectors;
+>>>>>>> 73981752bbdcd9dfac7faca7910c922a1f5b78e2
 
 @RestController
 @RequestMapping("/api/v1/videojuegos")
@@ -27,9 +35,36 @@ public class VideojuegosController {
     @Autowired
     private VideojuegosService videojuegosService;
 
+<<<<<<< HEAD
+	    @GetMapping
+	    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
+	    public ResponseEntity<Page<Videojuego>> listarTodosLosVideojuegos(
+	            @RequestParam(defaultValue = "0") int page,
+	            @RequestParam(defaultValue = "10") int size) {
+	        
+	        logger.info("VideojuegosController :: listarTodosLosVideojuegos");
+	        Pageable pageable = PageRequest.of(page, size);
+	        return new ResponseEntity<>(videojuegosService.listarTodosLosVideojuegos(pageable), HttpStatus.OK);
+	    }
+	    
+	    @GetMapping("/{id}")
+	    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
+	    public Videojuego getBookById(@PathVariable Long id) {
+	        return videojuegosService.obtenerVideojuegoPorId(id);
+	    }
+
+	    @PostMapping
+	    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	    public Videojuego createBook(@RequestBody Videojuego book) {
+	        Usuario contextUser = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	        book.setCreador(contextUser);
+	        return videojuegosService.agregarVideojuego(book);
+	    }
+=======
     private final RestTemplate restTemplate = new RestTemplate();
 
     // ── Métodos CRUD propios ────────────────────────────────────────────────
+>>>>>>> 73981752bbdcd9dfac7faca7910c922a1f5b78e2
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
@@ -40,6 +75,20 @@ public class VideojuegosController {
         return ResponseEntity.ok(videojuegosService.listarTodosLosVideojuegos(pageable));
     }
 
+<<<<<<< HEAD
+	    @PutMapping("/{id}")
+	    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	    public Videojuego updateBook(@PathVariable Long id, @RequestBody Videojuego bookDetails) {
+	        return videojuegosService.actualizarVideojuego(id, bookDetails);
+	    }
+
+	    @DeleteMapping("/{id}")
+	    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	    public void deleteBook(@PathVariable Long id) {
+	        videojuegosService.eliminarVideojuego(id);
+	    }
+	}
+=======
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
     public ResponseEntity<Videojuego> obtenerPorId(@PathVariable Long id) {
@@ -157,3 +206,4 @@ public class VideojuegosController {
         }
     }
 }
+>>>>>>> 73981752bbdcd9dfac7faca7910c922a1f5b78e2
