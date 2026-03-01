@@ -23,82 +23,52 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dwes.security.controller.user.AuthorizationAdminController;
-import com.dwes.security.entities.Libro;
-import com.dwes.security.service.LibrosService;
+import com.dwes.security.entities.Videojuego;
+import com.dwes.security.service.VideojuegosService;
 
-/** 
- * Nota 1: Es preferible mantener un solo idioma para el proyecto 
- * es discutible si se debería llamar BookController.java
- *  
- *       LibrosController.java 'llanito style ' 
- */ 
-
-// (o yanito) a una variedad lingüística utilizada 
-//  comúnmente por los habitantes de Gibraltar
-
-/**
- * Nota 2:
- * 
- *  - Usa DTO (LibroRequest) si necesitas control de seguridad adicional,
- *  desacoplamiento, validaciones específicas de la API,
- *  o personalización para diferentes operaciones.
- *  
- *  vs
- *  
- *  - Usa la Entidad directamente si tu aplicación es sencilla, 
- *  deseas mantener el código al mínimo, 
- *  y la API refleja directamente tu modelo de dominio.
- *  
- */
 	@RestController
-	@RequestMapping("/api/v1/libros")
-	public class LibrosController {
+	@RequestMapping("/api/v1/videojuegos")
+	public class VideojuegosController {
 
-    	private static final Logger logger = LoggerFactory.getLogger(LibrosController.class);
+    	private static final Logger logger = LoggerFactory.getLogger(VideojuegosController.class);
 
 	    @Autowired
-	    private LibrosService librosService;
+	    private VideojuegosService videojuegosService;
 
-	    // Endpoint para obtener un listado de libros, accesible solo por ROLE_USER
 	    @GetMapping
 	    @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
-	    public ResponseEntity<Page<Libro>> listarTodosLosLibros(
+	    public ResponseEntity<Page<Videojuego>> listarTodosLosVideojuegos(
 	            @RequestParam(defaultValue = "0") int page,
 	            @RequestParam(defaultValue = "10") int size) {
 	        
-	        logger.info("LibrosController :: listarTodosLosLibros");
+	        logger.info("VideojuegosController :: listarTodosLosVideojuegos");
 	        Pageable pageable = PageRequest.of(page, size);
-	        return new ResponseEntity<>(librosService.listarTodosLosLibros(pageable), HttpStatus.OK);
+	        return new ResponseEntity<>(videojuegosService.listarTodosLosVideojuegos(pageable), HttpStatus.OK);
 	    }
 	    
-	 // Leer un libro por ID
 	    @GetMapping("/{id}")
 	    @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
-	    public Libro getBookById(@PathVariable Long id) {
-	        return librosService.obtenerLibroPorId(id);
+	    public Videojuego getBookById(@PathVariable Long id) {
+	        return videojuegosService.obtenerVideojuegoPorId(id);
 	    }
 
-	    // CRUD endpoints, accesibles solo por ROLE_ADMIN
-	    // Crear un nuevo libro
 	    @PostMapping
 	    @PreAuthorize("hasRole('ROLE_ADMIN')")
-	    public Libro createBook(@RequestBody Libro book) {
-	        return librosService.agregarLibro(book);
+	    public Videojuego createBook(@RequestBody Videojuego book) {
+	        return videojuegosService.agregarVideojuego(book);
 	    }
 
 	    
 
-	    // Actualizar un libro
 	    @PutMapping("/{id}")
 	    @PreAuthorize("hasRole('ROLE_ADMIN')")
-	    public Libro updateBook(@PathVariable Long id, @RequestBody Libro bookDetails) {
-	        return librosService.actualizarLibro(id, bookDetails);
+	    public Videojuego updateBook(@PathVariable Long id, @RequestBody Videojuego bookDetails) {
+	        return videojuegosService.actualizarVideojuego(id, bookDetails);
 	    }
 
-	    // Eliminar un libro
 	    @DeleteMapping("/{id}")
 	    @PreAuthorize("hasRole('ROLE_ADMIN')")
 	    public void deleteBook(@PathVariable Long id) {
-	        librosService.eliminarLibro(id);
+	        videojuegosService.eliminarVideojuego(id);
 	    }
 	}

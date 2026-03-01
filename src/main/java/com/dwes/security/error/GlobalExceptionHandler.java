@@ -11,7 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.dwes.security.dto.response.error.ErrorDetailsResponse;
-import com.dwes.security.error.exception.LibroNotFoundException;
+import com.dwes.security.error.exception.VideojuegoNotFoundException;
 
 
 @ControllerAdvice
@@ -38,8 +38,8 @@ public class GlobalExceptionHandler {
      * @param request
      * @return
      */
-    @ExceptionHandler(LibroNotFoundException.class)
-    public ResponseEntity<ErrorDetailsResponse> handleLibroNotFoundException(LibroNotFoundException ex, WebRequest request) {
+    @ExceptionHandler(VideojuegoNotFoundException.class)
+    public ResponseEntity<ErrorDetailsResponse> handleLibroNotFoundException(VideojuegoNotFoundException ex, WebRequest request) {
     	ErrorDetailsResponse errorDetails = new ErrorDetailsResponse(
             new Date(),
             ex.getMessage(),
