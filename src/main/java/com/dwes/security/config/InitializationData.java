@@ -37,6 +37,7 @@ public class InitializationData implements CommandLineRunner {
             videojuegoRepository.deleteAll(); 
         }
     	
+        Usuario adminBob;
     	try {
     		// Usuario 1 - Rol USER
             Usuario usuario1 = new Usuario();
@@ -54,7 +55,7 @@ public class InitializationData implements CommandLineRunner {
             usuario2.setEmail("bob.smith@example.com");
             usuario2.setPassword(passwordEncoder.encode("password456"));
             usuario2.getRoles().add(Role.ROLE_ADMIN);
-            usuarioRepository.save(usuario2);
+            adminBob = usuarioRepository.save(usuario2);
 
             // Usuario 3 - Rol USER
             Usuario usuario3 = new Usuario();
@@ -65,21 +66,21 @@ public class InitializationData implements CommandLineRunner {
             usuario3.getRoles().add(Role.ROLE_USER);
             usuarioRepository.save(usuario3);
             
-            
-            
-            
-    	}catch(Exception e) {
-    		
+    	} catch(Exception e) {
+            // En caso de que ya existan, buscamos a Bob
+            adminBob = usuarioRepository.findByEmail("bob.smith@example.com").orElse(null);
     	}
+
     	Faker faker = new Faker(new Locale("es"));
         for (int i = 0; i < 10; i++) {
             Videojuego videojuego = new Videojuego();
             videojuego.setNombre(faker.animal().name());
             videojuego.setDesarrollador(faker.superhero().name());
             videojuego.setEsOnline(faker.random().nextBoolean()); 
-  
+            if (adminBob != null) {
+                videojuego.setCreador(adminBob);
+            }
             videojuegoRepository.save(videojuego);
         }
-        
     }
 }

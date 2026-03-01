@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dwes.security.controller.user.AuthorizationAdminController;
+import com.dwes.security.entities.Usuario;
 import com.dwes.security.entities.Videojuego;
 import com.dwes.security.service.VideojuegosService;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 	@RestController
 	@RequestMapping("/api/v1/videojuegos")
@@ -36,7 +38,7 @@ import com.dwes.security.service.VideojuegosService;
 	    private VideojuegosService videojuegosService;
 
 	    @GetMapping
-	    @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
+	    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
 	    public ResponseEntity<Page<Videojuego>> listarTodosLosVideojuegos(
 	            @RequestParam(defaultValue = "0") int page,
 	            @RequestParam(defaultValue = "10") int size) {
@@ -47,27 +49,29 @@ import com.dwes.security.service.VideojuegosService;
 	    }
 	    
 	    @GetMapping("/{id}")
-	    @PreAuthorize("hasRole('ROLE_USER') || hasRole('ROLE_ADMIN')")
+	    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
 	    public Videojuego getBookById(@PathVariable Long id) {
 	        return videojuegosService.obtenerVideojuegoPorId(id);
 	    }
 
 	    @PostMapping
-	    @PreAuthorize("hasRole('ROLE_ADMIN')")
+	    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	    public Videojuego createBook(@RequestBody Videojuego book) {
+	        Usuario contextUser = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	        book.setCreador(contextUser);
 	        return videojuegosService.agregarVideojuego(book);
 	    }
 
 	    
 
 	    @PutMapping("/{id}")
-	    @PreAuthorize("hasRole('ROLE_ADMIN')")
+	    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	    public Videojuego updateBook(@PathVariable Long id, @RequestBody Videojuego bookDetails) {
 	        return videojuegosService.actualizarVideojuego(id, bookDetails);
 	    }
 
 	    @DeleteMapping("/{id}")
-	    @PreAuthorize("hasRole('ROLE_ADMIN')")
+	    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	    public void deleteBook(@PathVariable Long id) {
 	        videojuegosService.eliminarVideojuego(id);
 	    }
