@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,50 +31,41 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-	@Autowired
+    @Autowired
     JwtAuthenticationFilter jwtAuthenticationFilter;
-	@Autowired
-     UserService userService;
-    
+    @Autowired
+    UserService userService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request ->           
-                request
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").hasAnyAuthority(Role.ROLE_USER.toString(), Role.ROLE_ADMIN.toString())
- 	           	.requestMatchers(HttpMethod.POST, "/api/v1/videojuegos/**").hasAuthority(Role.ROLE_ADMIN.toString())
- 	           .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/**").hasAuthority(Role.ROLE_ADMIN.toString())
- 	          .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/**").hasAuthority(Role.ROLE_ADMIN.toString())
- 	           	.requestMatchers("/api/v1/users/**").hasAuthority("ROLE_ADMIN")  // Modificado aquí
-                .anyRequest().authenticated())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").hasAnyAuthority(Role.ROLE_USER.toString(), Role.ROLE_ADMIN.toString())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos/**").hasAuthority(Role.ROLE_ADMIN.toString())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/**").hasAuthority(Role.ROLE_ADMIN.toString())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/**").hasAuthority(Role.ROLE_ADMIN.toString())
+                        .requestMatchers("/api/v1/users/**").hasAuthority(Role.ROLE_ADMIN.toString())
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-    
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOriginPatterns(List.of(
-            "http://localhost:8282/",
-            "http://127.0.0.1:8282/",
-            "http://192.168.*.*:8282/", // Nota: Usa * en lugar de %2A para patrones de Spring
-            "http://10.*.*.*:8282/",
-            "http://172.1[6-9].*.*:8282/",
-            "http://172.2[0-9].*.*:8282/",
-            "http://172.3[0-1].*.*:8282/"
-        ));
-
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
